@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.global.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.global.name }}-server
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.name }}-server
+    spec:
+      securityContext:
+            fsGroup: {{ .Values.deployment.security.fsGroup }}
+            runAsUser: {{ .Values.deployment.security.runAsUser }}
+      serviceAccountName: {{ .Values.global.name }}-admin
+      containers:
+        - name: {{ .Values.global.name }}
+          image: {{ .Values.global.image }}
+          resources:
+            limits:
+              memory: {{ .Values.deployment.limits.memory }}
+              cpu: {{ .Values.deployment.limits.cpu }}
+            requests:
+              memory: {{ .Values.deployment.requests.memory }}
+              cpu: {{ .Values.deployment.requests.cpu }}
+          ports:
+            - name: httpport
+              containerPort: 8080
+            - name: jnlpport
+              containerPort: 50000
+          livenessProbe:
+            httpGet:
+              path: "/login"
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: "/login"
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: {{ .Values.global.name }}-data
+              mountPath: {{ .Values.volume.mountPath }}
+      volumes:
+        - name: {{ .Values.global.name }}-data
+          persistentVolumeClaim:
+              claimName: {{ .Values.global.name }}-pv-claim

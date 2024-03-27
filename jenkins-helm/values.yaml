@@ -1,0 +1,32 @@
+global:
+  name: jenkins
+  namespace: cicd
+  image: jenkins/jenkins:lts
+  nodeType: t3.small
+
+prometheus:
+  scrape: true
+  path: /
+
+deployment:
+  replicas: 1
+  security:
+    fsGroup: 1000
+    runAsUser: 1000
+  limits:
+    memory: "1Gi"
+    cpu: "1000m"
+  requests:
+    memory: "500Mi"
+    cpu: "500m"
+
+service:
+  type: ClusterIP
+  ports:
+    port: 8080
+    targetPort: 8080
+
+volume:
+  totalStorage: 10Gi
+  claimedStorage: 3Gi
+  mountPath: "/var/jenkins_home"
