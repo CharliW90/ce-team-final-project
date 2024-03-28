@@ -6,7 +6,7 @@ Create a namespace for our CI/CD application ```kubectl create namespace cicd```
 
 Install Jenkins ```helm install jenkins jenkins-helm/ -n cicd```
 
-- Port Forward the jenkins deployment to localhost ```kubectl port-forward -n cicd svc/jenkins-service 8080:8080```
+- Port Forward the jenkins deployment to localhost ```kubectl port-forward -n cicd svc/jenkins-service 3000:3000```
 - visit [localhost:8080](http://localhost:8080)
 
 - If this is first-time setup then the admin password needs to be retrieved from the logs of the pod that jenkins was installed on
