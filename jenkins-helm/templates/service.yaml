@@ -14,3 +14,7 @@ spec:
   ports:
     - port: {{ .Values.service.ports.port }}
       targetPort: {{ .Values.service.ports.targetPort }}
+      name: gui
+    - port: 50000
+      targetPort: 50000
+      name: slaves
