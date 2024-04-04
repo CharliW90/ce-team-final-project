@@ -1,0 +1,55 @@
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@8.2.1
+
+parameters:
+  run-build-frontend-job:
+    type: boolean
+    default: false
+  run-build-backend-job:
+    type: boolean
+    default: false
+  run-all-jobs:
+    type: boolean
+    default: false
+
+jobs:
+  build-frontend-and-push:
+    working_directory: ~/ce-team-final-project/apps
+    docker:
+      - image: cimg/aws:2023.05
+    steps:
+      - setup_remote_docker # Ensures that we can issue docker build commands
+      - aws-ecr/build-and-push-image:
+          repo: ce-team-project-frontend
+          path: frontend # This is the directory to look for the Dockerfile
+          build-path: frontend # This is directory for Docker to load the build path to source code
+          tag: 1.0.${CIRCLE_BUILD_NUM},latest # This will be automatically replaced with the job number
+          public-registry-alias: w9q6m4b6
+          public-registry: true
+  build-backend-and-push:
+    working_directory: ~/ce-team-final-project/apps
+    docker:
+      - image: cimg/aws:2023.05
+    steps:
+      - setup_remote_docker # Ensures that we can issue docker build commands #
+      - aws-ecr/build-and-push-image:
+          repo: ce-team-project-backend
+          path: backend # This is the directory to look for the Dockerfile
+          build-path: backend # This is directory for Docker to load the build path to source code
+          tag: 1.0.${CIRCLE_BUILD_NUM},latest # This will be automatically replaced with the job number
+          public-registry-alias: w9q6m4b6
+          public-registry: true  
+
+workflows:
+  build-and-push-frontend:
+    when:
+      or: [ << pipeline.parameters.run-build-frontend-job >>, << pipeline.parameters.run-all-jobs >> ]
+    jobs:
+      - build-frontend-and-push
+  build-and-push-backend:
+    when:
+      or: [ << pipeline.parameters.run-build-backend-job >>, << pipeline.parameters.run-all-jobs >> ]
+    jobs:
+      - build-backend-and-push

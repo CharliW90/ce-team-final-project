@@ -20,6 +20,20 @@ Install ArgoCD ```kubectl apply -n argocd -f https://raw.githubusercontent.com/a
 - username is admin
 - password is obtained from the earlier step
 
+## CircleCI Image Build & Push
+
+The .circleci directory includes the instructions for CircleCI to follow when a new build of the frontend or backend images is required.
+
+This config file is run as a job every time a change occurs in the repo, but it looks specifically for changes to either of the frontend or backend app directories, and only runs a build job when necessary.
+
+The config file currently pushes images to an AWS public Elastic Container Registry - the registry can be amended to your preference.
+
+- Log into CircleCI
+- Follow their instructions for setting up access to the repo
+- Create a new project for the apps (one project covers both apps)
+- Point the project to the repo
+- CircleCI will read the config file and will build and push the images
+
 ## Launch the Frontend App via ArgoCD
 
 Once logged into ArgoCD we can deploy our app
