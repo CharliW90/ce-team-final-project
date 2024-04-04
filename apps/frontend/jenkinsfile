@@ -1,0 +1,13 @@
+pipeline {
+  agent any
+  stages {
+    stage('Build and Push') {
+      steps {
+        script {
+          dockerImage = docker.build("${env.REPO_NAME}/${env.APP_NAME}:${env.BUILD_NUMBER}")
+          dockerImage.push()
+        }
+      }
+    }
+  }
+}

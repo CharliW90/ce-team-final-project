@@ -1,0 +1,18 @@
+version: 2.1
+setup: true
+
+orbs:
+  path-filtering: circleci/path-filtering@0.1.1
+  aws-ecr: circleci/aws-ecr@8.2.1
+
+workflows:
+  always-run:
+    jobs:
+      - path-filtering/filter:
+          name: check-for-updated-images
+          mapping: |
+            apps/frontend/.* run-build-frontend-job true
+            apps/backend/.* run-build-backend-job true
+            .circleci/.* run-all-jobs true
+          base-revision: main
+          config-path: .circleci/continue_config.yml
